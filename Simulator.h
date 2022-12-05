@@ -22,19 +22,22 @@ class Simulator
 {
 	private:
 		vector<int> accumulator;
-		vector<int> CI; // Control Instruction
-		vector<int> PI; // Present Instruction/Instruction Decode
-		vector<vector<int>> memory; // 32x32bit memory
+		vector<int> CI;                 // Control Instruction
+		vector<int> PI;                 // Present Instruction/Instruction Decode
+		vector<vector<int>> memory;     // 32x32bit memory
         int currentInstructionSet;
         bool lamp = false;
         int sizeOfMemory = 32;
         int sizeOfMemLoca = 32;
 
 	public: 
+        //Fetch-Execute cycle
         void increment_CI();
 		void fetch();
 		void decode();
 		void execute();
+
+        //Opcodes
 		void JMP();
 		void JRP();
 		void LDN();
@@ -42,6 +45,8 @@ class Simulator
 		void STO();
 		void CMP();
 		void STP();
+
+        //Display Methods
 		void display_everything();
 
 
