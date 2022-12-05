@@ -6,6 +6,15 @@
 
 #include "Simulator.h"
 #include <iostream>
+#include <cstring>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <vector>
+// #include <dirent.h>
+#include <filesystem>
+namespace fs = std::filesystem;
 using namespace std;
 
 void displayMenu();
@@ -326,7 +335,7 @@ void displayMenu()
     while(!finished)
     {
         cout << "MENU" << endl;
-        cout << "1) Load in machine code from file" << endl;
+        cout << "1) Load in machine code from file and execute it" << endl;
         cout << "2) Change instruction set" << endl;
         cout << "3) Change number of memory locations" << endl;
         cout << "4) Change the size of each memory location" << endl;

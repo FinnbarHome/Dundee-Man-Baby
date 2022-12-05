@@ -5,15 +5,7 @@
 */
 
 #include <iostream>
-#include <cstring>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <algorithm>
 #include <vector>
-// #include <dirent.h>
-#include <filesystem>
-namespace fs = std::filesystem;
 using namespace std;
 
 // Class "Simulator" holding accumulator, CI, PI, memory store and
@@ -26,9 +18,9 @@ private:
     vector<int> PI;                 // Present Instruction/Instruction Decode
     vector<vector<int>> memory;     // 32x32bit memory
     int currentInstructionSet;
-    bool lamp = false;              //Stop lamp, if true, lamp is on therefore program ends
-    int sizeOfMemory = 32;
-    int sizeOfMemLoca = 32;
+    bool lamp;              //Stop lamp, if true, lamp is on therefore program ends
+    int sizeOfMemory;
+    int sizeOfMemLoca;
 
 public:
     //Fetch-Execute cycle
@@ -133,6 +125,15 @@ public:
 
 //Constructor
 Simulator::Simulator(/* args */){
+
+    accumulator.assign(32,0);
+    CI.assign(32,0);
+    PI.assign(32,0);
+    memory.assign( 32 , vector<int> (32, 0));
+    currentInstructionSet = 3;
+    lamp = false;
+    sizeOfMemory = 32;
+    sizeOfMemLoca = 32;
 
 }
 
