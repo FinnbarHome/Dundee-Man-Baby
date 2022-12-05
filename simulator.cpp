@@ -8,24 +8,157 @@
 #include <iostream>
 using namespace std;
 
+void displayMenu();
+
+bool Simulator::readFromFile(){
+
+    ifstream f;
+
+    // Iterate through ONLY .txt files in current directory
+    DIR *di;
+    char *ptr1,*ptr2;
+    int retn;
+    struct dirent *dir;
+    di = opendir("."); // Open current directory
+    if (di)
+    {
+        while ((dir = readdir(di)) != NULL)
+        {
+            ptr1 = strtok(dir->d_name, ".");
+            ptr2 = strtok(NULL, ".");
+            if (ptr2!=NULL)
+            {
+                retn = strcmp(ptr2, "txt");
+                if(retn == 0)
+                {
+                    printf("%s.txt\n", ptr1);
+                }
+            }
+        }
+        closedir(di);
+    }
+    cout << "\nWhich machine code file would you like to read in? (include .txt at end): ";
+    string c;
+    cin >> c;
+    cout << c << endl;
+    f.open(c);
+
+    if(!f.is_open()) 
+    {
+        cout << "Could not open file of that name, or does not exist." << endl;
+        // clear input buffer
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return false;
+    }
+
+    string line;
+    while(getline(f, line)) 
+    {
+        // Insert each character of each line into a vector
+        vector<int> v;
+        for (int n = 0; n < (line.length()-1); n++)
+        {
+            char c = line[n];
+            int temp = c - '0'; // Conversion to int
+
+            if (temp != 0 && temp != 1)
+            {
+                f.close();
+                v.clear();
+                memory.clear();
+                // clear input buffer
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                return false;
+            }
+            
+            v.push_back(temp); 
+        }
+        memory.push_back(v); // Push vector into memory
+    }
+
+    f.close();
+
+    // for(int i = 0; i < memory.size(); i++)
+    // {
+    // 	cout << "MEMORY(i): " << memory.size() << endl;
+    // 	for (int j = 0; j < memory[i].size(); j++)
+    // 	{
+    // 		if (j == 0)
+    // 			cout << "MEMORY(j): " << memory[j].size() << endl;
+    // 		cout << memory[i][j];
+    // 	}
+    // 	cout <<endl;
+    // }
+
+    return true;
+
+}
 
 //Adds one to control instruction
 void Simulator::increment_CI(){
+
+    int num = binaryToDec(CI);
+    num += 1;
+    vector<int> memloca = decToBinary(num);
+    CI = memloca;
 
 }
 
 //Fetchs next instruction from store
 void Simulator::fetch(){
 
+    int dec = binaryToDec(CI);
+    PI = memory[dec];
+
 }
 
 //Decodes 5 bit operand and 3 bit opcode
 void Simulator::decode(){
 
+    CI.assign(32,0);
+
+    while(lamp == false)
+    {
+        vector<int> opc;
+        if(currentInstructionSet == 3)
+        {
+            opc = {PI[13],PI[14],PI[15]};
+            opcode(opc);
+        }
+        else if(currentInstructionSet == 4)
+        {
+            opc = {PI[13],PI[14],PI[15],PI[16]};
+            opcode(opc);
+        }
+        else
+        {
+            opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
+            opcode(opc);
+        }
+    }
+
+    lamp = false;
+
 }
 
 //Executes instruction
-void Simulator::execute(){
+bool Simulator::execute(){
+
+    if (memory.empty())
+        return false;
+
+    bool done = false;
+    while (!done)
+    {
+        system("clear"); // Clear screen after every cycle
+        display();
+        cout << "\nTerminate program by CTRL+C.\n";
+        sleep(1);
+    }
+    return true;
 
 }
 
@@ -67,7 +200,16 @@ void Simulator::STP(){
 }
 
 //Displays memory state
-void Simulator::display_everything(){
+void Simulator::display(){
+
+    for(int i = 0; i < memory.size(); i++)
+    {
+        for (int j = 0; j < memory[i].size(); j++)
+        {
+            cout << memory[i][j];
+        }
+        cout << endl;
+    }
 
 }
 
@@ -78,16 +220,12 @@ void Simulator::opcode(vector<int> opc){
     switch (num){
         case 0: Simulator::JMP();
             break;
-
         case 1: Simulator::JRP();
             break;
-
         case 2: Simulator::LDN();
             break;
-
         case 3: Simulator::STO();
             break;
-
         case 4: Simulator::SUB();
             break;
         case 5: Simulator::SUB();
@@ -100,31 +238,83 @@ void Simulator::opcode(vector<int> opc){
     }
 }
 
+vector<int> Simulator::decToBinary(int num)
+{
+    // Store binary as string to ensure initial 0's are not ignored
+    string bin = "";
+    while (num > 0)
+    {
+        bin += to_string(num % 2);
+        num = num / 2;
+    }
 
+    vector<int> v;
 
+    // For each character in string, convert into int and store in vector
+    for (char ch : bin)
+    {
+        int n = stoi(&ch);
+        v.push_back(n);
+    }
 
-void run(){
-	// Create new instance of simulator
-	Simulator sim;
-
-	// Should loop until STP function is recieved
-	while (sim.getLamp() == false)
-	{
-		sim.increment_CI();
-		sim.fetch();
-		sim.decode();
-		sim.execute();
-		sim.display_everything();
-	}
+    return v;
 }
+
+int Simulator::binaryToDec(vector<int> num)
+{
+    // Store decimal and base
+    int dec = 0, base = 1;
+
+    // Reverse vector to account for big-endian
+    reverse(num.begin(), num.end());
+
+    // TEST: Print reversed vector
+    // for (auto element : num)
+    // 	cout << element;
+    // cout << endl;
+    
+    // Store each element of vector into string
+    stringstream ss;
+    for(int i = 0; i < num.size(); ++i)
+    {
+    ss << num[i];
+    }
+    string s = ss.str();
+
+    // Convert to binary
+    int temp = stoi(s);
+    while (temp)
+    {
+        int lastDigit = temp % 10;
+        temp = temp / 10;
+        dec += lastDigit * base;
+        base = base * 2;
+    }
+
+    return dec;
+}
+
+
+// void run(){
+// 	// Create new instance of simulator
+// 	Simulator sim;
+
+// 	// Should loop until STP function is recieved
+// 	while (sim.getLamp() == false)
+// 	{
+// 		sim.increment_CI();
+// 		sim.fetch();
+// 		sim.decode();
+// 		sim.execute();
+// 		sim.display_everything();
+// 	}
+// }
 
 int main()
 {
-	run();
+	displayMenu();
 	return 0;
 }
-
-
 
 void displayMenu()
 {
@@ -146,6 +336,15 @@ void displayMenu()
         switch (choice)
         {
             case 1: {sim.readFromFile();
+                    // Should loop until STP function is recieved
+                    while (sim.getLamp() == false)
+                    {
+                        sim.increment_CI();
+                        sim.fetch();
+                        sim.decode();
+                        sim.execute();
+                        sim.display();
+                    }
                     break;}
 
             case 2: {int num = 0;
