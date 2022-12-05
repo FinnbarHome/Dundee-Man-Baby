@@ -29,6 +29,7 @@ void Simulator::execute(){
 
 }
 
+
 //Set CI to content of store location
 void Simulator::JMP(){
 
@@ -61,6 +62,7 @@ void Simulator::CMP(){
 
 //Halts machine
 void Simulator::STP(){
+    bool stopped = true;
 
 }
 
@@ -69,25 +71,51 @@ void Simulator::display_everything(){
 
 }
 
+// OPCODE functions (use case statements)
+void Simulator::opcode(vector<int> opc){
+    int num = binaryToDec(opc);
+    
+    switch (num){
+        case 0: Simulator::JMP();
+            break;
+
+        case 1: Simulator::JRP();
+            break;
+
+        case 2: Simulator::LDN();
+            break;
+
+        case 3: Simulator::STO();
+            break;
+
+        case 4: Simulator::SUB();
+            break;
+        case 5: Simulator::SUB();
+            break;
+        case 6: Simulator::CMP();
+            break;
+        case 7: Simulator::STP();
+            break;
+    default: break;
+    }
+}
 
 
 
 
 void run(){
-    displayMenu();
+	// Create new instance of simulator
+	Simulator sim;
 
-	//Create new instance of simulator
-	// Simulator sim;
-
-	//Should loop until STP function is recieved
-	// while (halted != true)
-	// {
-	// 	sim.increment_CI();
-	// 	sim.fetch();
-	// 	sim.decode();
-	// 	sim.execute();
-	// 	sim.display_everything();
-	// }
+	// Should loop until STP function is recieved
+	while (sim.getLamp() == false)
+	{
+		sim.increment_CI();
+		sim.fetch();
+		sim.decode();
+		sim.execute();
+		sim.display_everything();
+	}
 }
 
 int main()
@@ -105,7 +133,7 @@ void displayMenu()
     bool finished = false;
     int choice;
 
-    while(finished == false)
+    while(!finished)
     {
         cout << "MENU" << endl;
         cout << "1) Load in machine code from file" << endl;
@@ -139,7 +167,7 @@ void displayMenu()
 
                     break;}
 
-            case 3: {int num = 0;
+            case 3: {int num = 33;
                     cout << "Enter a number for the new amount of memory locations (between 31 and 65): ";
                     cin >> num;
                     while(num < 32 && num > 64)
