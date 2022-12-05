@@ -17,53 +17,59 @@
 namespace fs = std::filesystem;
 using namespace std;
 
+// adapt sleep function depending on operating system
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 void displayMenu();
 
-bool Simulator::readFromFile(){
-
+bool Simulator::readFromFile()
+{
     ifstream f;
 
-    // Iterate through ONLY .txt files in current directory
-    DIR *di;
-    char *ptr1,*ptr2;
-    int retn;
-    struct dirent *dir;
-    di = opendir("."); // Open current directory
-    if (di)
-    {
-        while ((dir = readdir(di)) != NULL)
-        {
-            ptr1 = strtok(dir->d_name, ".");
-            ptr2 = strtok(NULL, ".");
-            if (ptr2!=NULL)
-            {
-                retn = strcmp(ptr2, "txt");
-                if(retn == 0)
-                {
-                    printf("%s.txt\n", ptr1);
-                }
-            }
-        }
-        closedir(di);
-    }
+    // Iterate through ONLY .txt files in current directory 
+    // ***FIX NEEDED FOR SHOWING TXT ONLY***
+    for (const auto & entry : fs::directory_iterator("./"))
+        cout << entry.path() << endl;
+	
     cout << "\nWhich machine code file would you like to read in? (include .txt at end): ";
     string c;
     cin >> c;
-    cout << c << endl;
     f.open(c);
+    memory.clear();
 
     if(!f.is_open()) 
     {
-        cout << "Could not open file of that name, or does not exist." << endl;
+        cout << "Could not open file of that name - incompatible or does not exist." << endl;
         // clear input buffer
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         return false;
     }
-
+	
+    int count = 0;
     string line;
     while(getline(f, line)) 
     {
+	//STILL TO PROPERLY IMPLEMENT: formatting of line to strip spaces
+        // line.erase(remove(line.begin(),line.end(),' '),line.end());
+        // line.erase(remove(line.begin(),line.end(),'\n'),line.end());
+        //cout << line.length() << "AHHH" << endl;
+	    
+	// Ensure number of lines does not exceed size of memory
+        if (count > sizeOfMemory)
+            return false;
+
+        //cout << count << ": LINE LEN: " << line.length()-1 << endl;
+        //cout << "MEM LOCA: " << sizeOfMemLoca << endl;
+
+        // Ensure line of length matches size of memory location
+        if ((line.length()-1) != sizeOfMemLoca)
+            return false;
+	   
         // Insert each character of each line into a vector
         vector<int> v;
         for (int n = 0; n < (line.length()-1); n++)
@@ -90,6 +96,13 @@ bool Simulator::readFromFile(){
 
     f.close();
 
+    // Fill rest of memory with 0's
+    for (int i = 0; i <= sizeOfMemory - count; i++)
+    {
+        vector<int> vec(32, 0);
+        memory.push_back(vec);
+    }
+	
     // for(int i = 0; i < memory.size(); i++)
     // {
     // 	cout << "MEMORY(i): " << memory.size() << endl;
@@ -103,7 +116,6 @@ bool Simulator::readFromFile(){
     // }
 
     return true;
-
 }
 
 //Adds one to control instruction
@@ -159,14 +171,6 @@ bool Simulator::execute(){
     if (memory.empty())
         return false;
 
-    bool done = false;
-    while (!done)
-    {
-        system("clear"); // Clear screen after every cycle
-        display();
-        cout << "\nTerminate program by CTRL+C.\n";
-        sleep(1);
-    }
     return true;
 
 }
@@ -344,19 +348,40 @@ void displayMenu()
         cin >> choice;
         switch (choice)
         {
-            case 1: {sim.readFromFile();
-                    // Should loop until STP function is recieved
-                    while (sim.getLamp() == false)
-                    {
-                        sim.increment_CI();
-                        sim.fetch();
-                        sim.decode();
-                        sim.execute();
-                        sim.display();
-                    }
-                    break;}
-
-            case 2: {int num = 0;
+            case 1: 
+            {
+                cout << endl;
+                if (sim.readFromFile())
+                {
+                    cout << "Read successful and memory updated. Beginning program..." << endl;
+                    // cout << "Current state of memory: \n" << endl;
+                    // sim.display();
+                    cout << endl;
+                    sleep(1);
+                }
+                else
+                {
+                    cout << "Read unsuccessful. Memory has been emptied.\n" << endl;
+                    break;
+                }
+                int count = 0;
+                // Should loop until STP function is recieved
+                while (sim.getLamp() == false)
+                {
+                    system("clear"); // Clear screen after every cycle
+                    cout << "\nTerminate program by CTRL+C, or automatically return to menu once stop lamp is set by the program.\n";
+                    sim.increment_CI();
+                    sim.fetch();
+                    sim.decode();
+                    sim.execute();
+                    sim.display();
+                    sleep(1);
+                }
+                break;
+            }
+            case 2: 
+	    {	    
+		    int num = 0;
                     cout << "Enter the amount of bits dedicated for the instructions opcodes (3,4 or 5): ";
                     cin >> num;
                     while(num != 3 && num != 4 && num != 5)
@@ -373,9 +398,11 @@ void displayMenu()
                     else
                         sim.setInstructionSet(num);
 
-                    break;}
-
-            case 3: {int num = 33;
+                    break;
+	    }
+            case 3: 
+	    {
+		    int num = 33;
                     cout << "Enter a number for the new amount of memory locations (between 31 and 65): ";
                     cin >> num;
                     while(num < 32 && num > 64)
@@ -386,9 +413,11 @@ void displayMenu()
                     }
 
                     sim.setMemorySize(num);
-                    break;}
-
-            case 4: {int num = 0;
+                    break;
+	    }
+            case 4: 
+	    {
+		    int num = 0;
                     cout << "Enter a number for the new size of each memory location (between 31 and 101): ";
                     cin >> num;
                     while(num < 32 && num > 100)
@@ -399,13 +428,18 @@ void displayMenu()
                     }
 
                     sim.setMemLocaSize(num);
-                    break;}
-
-            case 5: {finished = true;
-                    break;}
-
-            default: {cout << "Invalid Input" << endl;
-                    break;}
+                    break;
+	    }
+            case 5: 
+	    {	
+		    finished = true;
+                    break;
+	    }
+            default: 
+	    {
+		    cout << "Invalid Input" << endl;
+                    break;
+	    }
         }
     }
 }
