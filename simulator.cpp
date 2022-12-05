@@ -4,6 +4,14 @@
 	Module Code: AC21009
 */
 
+#define NOMINMAX
+// adapt sleep function depending on operating system
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include "Simulator.h"
 #include <iostream>
 #include <cstring>
@@ -16,13 +24,6 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 using namespace std;
-
-// adapt sleep function depending on operating system
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 
 void displayMenu();
 
