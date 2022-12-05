@@ -123,6 +123,10 @@ void Simulator::increment_CI(){
 
     int num = binaryToDec(CI);
     num += 1;
+    if(num > sizeOfMemory)
+    {
+        setLamp(true);
+    }
     vector<int> memloca = decToBinary(num);
     CI = memloca;
 
@@ -141,27 +145,22 @@ void Simulator::decode(){
 
     CI.assign(32,0);
 
-    while(lamp == false)
+    vector<int> opc;
+    if(currentInstructionSet == 3)
     {
-        vector<int> opc;
-        if(currentInstructionSet == 3)
-        {
-            opc = {PI[13],PI[14],PI[15]};
-            opcode(opc);
-        }
-        else if(currentInstructionSet == 4)
-        {
-            opc = {PI[13],PI[14],PI[15],PI[16]};
-            opcode(opc);
-        }
-        else
-        {
-            opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
-            opcode(opc);
-        }
+        opc = {PI[13],PI[14],PI[15]};
+        opcode(opc);
     }
-
-    lamp = false;
+    else if(currentInstructionSet == 4)
+    {
+        opc = {PI[13],PI[14],PI[15],PI[16]};
+        opcode(opc);
+    }
+    else
+    {
+        opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
+        opcode(opc);
+    }
 
 }
 
@@ -371,6 +370,8 @@ void displayMenu()
                     system("clear"); // Clear screen after every cycle
                     cout << "\nTerminate program by CTRL+C, or automatically return to menu once stop lamp is set by the program.\n";
                     sim.increment_CI();
+                    if(sim.getLamp())
+                        continue;
                     sim.fetch();
                     sim.decode();
                     sim.execute();
