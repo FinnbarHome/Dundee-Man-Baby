@@ -123,15 +123,15 @@ bool Simulator::readFromFile()
 
 //Adds one to control instruction
 void Simulator::increment_CI(){
+    // Convert CI to a decimal integer, add one and set this to var num
+    int num = binaryToDec(CI) + 1;
 
-    int num = binaryToDec(CI);
-    num++;
-
-    if(num > sizeOfMemory)
-    {
+    // If the new value is greater than sizeOfMemory, turn on the lamp
+    if (num > sizeOfMemory){
         setLamp(true);
     }
-    
+   
+    // Convert the new value back to a binary and store it in CI
     CI = decToBinary(num);
 }
 
@@ -185,7 +185,7 @@ void Simulator::JMP(){
 
 //Add content of store location to CI
 void Simulator::JRP(){
-
+    
 }
 
 //Load accumulator with negative form of store content 
@@ -210,8 +210,8 @@ void Simulator::CMP(){
 
 //Halts machine
 void Simulator::STP(){
-    bool stopped = true;
-
+    //Sets the lamp to true therefore machine is halted
+    setLamp(true);
 }
 
 //Displays memory state
@@ -232,28 +232,19 @@ void Simulator::display(){
 // OPCODE functions 
 void Simulator::opcode(vector<int> opc){
     int num = binaryToDec(opc);
-    
-    //Switch statement to select the op code
-    switch (num){
-        case 0: Simulator::JMP();
-            break;
-        case 1: Simulator::JRP();
-            break;
-        case 2: Simulator::LDN();
-            break;
-        case 3: Simulator::STO();
-            break;
-        case 4: Simulator::SUB();
-            break;
-        case 5: Simulator::SUB();
-            break;
-        case 6: Simulator::CMP();
-            break;
-        case 7: Simulator::STP();
-            break;
-    default: break;
+
+    // Switch statement to select the op code
+    switch (num) {
+        case 0: Simulator::JMP(); break;
+        case 1: Simulator::JRP(); break;
+        case 2: Simulator::LDN(); break;
+        case 3: Simulator::STO(); break;
+        case 4: case 5: Simulator::SUB(); break; // combine cases 4 and 5
+        case 6: Simulator::CMP(); break;
+        case 7: Simulator::STP(); break;
     }
 }
+
 
 vector<int> Simulator::decToBinary(int num)
 {
