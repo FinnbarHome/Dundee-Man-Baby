@@ -129,10 +129,8 @@ void Simulator::increment_CI(){
     int num = binaryToDec(CI) + 1;
 
     // If the new value is greater than sizeOfMemory, turn on the lamp
-    if (num > sizeOfMemory){
-        setLamp(true);
-    }
-   
+    setLamp(num > sizeOfMemory);
+
     // Convert the new value back to a binary and store it in CI
     CI = decToBinary(num);
 }
