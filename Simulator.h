@@ -124,6 +124,8 @@ public:
 
     //Destructor
     ~Simulator();
+	
+    friend std::ostream& operator<<(std::ostream &output, const vector<int> &v);
 };
 
 //Constructor
@@ -143,4 +145,15 @@ Simulator::Simulator(/* args */){
 //Destructor
 Simulator::~Simulator(){
 
+}
+
+// Output overload
+ostream& operator<<(ostream &output, const vector<int> &v) 
+{
+    for (int i = 0; i < v.size(); i++)
+    {
+        output << v[i];
+    }
+
+    return output;
 }
