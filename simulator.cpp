@@ -213,19 +213,35 @@ void Simulator::LDN(){
     //Negates store
     int store = -store;
 
-
     //Sets accumulator as binary conversion of store
     setAccumulator(decToBinary(store));
 }
 
 //Copy accumulator to store location
 void Simulator::STO(){
+    //Get operand of PI
+    int operand = getOperand();
 
+    //Copys accmulator to store location
+    memory[operand] = getAccumulator();
 }
 
 //Subtract content of store location from accumulator 
 void Simulator::SUB(){
+    //Get operand of PI
+    int operand = getOperand();
 
+    //Create an int decimal version of the current store 
+    int store = binaryToDec(memory[operand]);
+
+    //Create an int decimal version of the accumulator
+    int acc = binaryToDec(getAccumulator());
+
+    //Accumulator value minus store value
+    acc = acc - store;
+
+    //Sets accumulator as binary conversion of acc
+    setAccumulator(decToBinary(acc));
 }
 
 //Increment CI if Accumulator value negative otherwise do nothing
