@@ -125,45 +125,38 @@ bool Simulator::readFromFile()
 //Adds one to control instruction
 void Simulator::increment_CI(){
     // Convert CI to a decimal integer, add one and set this to var num
-    int num = binaryToDec(CI) + 1;
+    int num;
+    num = binaryToDec(getCI());
+    num++;
 
     // If the new value is greater than sizeOfMemory, turn on the lamp
-    setLamp(num > sizeOfMemory);
+    setLamp(num >= sizeOfMemory);
 
+    if (getLamp())
+        return;
+
+    
     // Convert the new value back to a binary and store it in CI
     CI = decToBinary(num);
+    //cout << getCI() << endl;
 }
 
 // Fetchs next instruction from store
 void Simulator::fetch(){
-    PI = memory[binaryToDec(CI)];
+    PI = memory[binaryToDec(getCI())];
 }
 
 //Decodes 5 bit operand and 3 bit opcode
 void Simulator::decode(){
-    CI.assign(32,0);
-
     vector<int> opc;
     if (currentInstructionSet == 3) opc = {PI[13],PI[14],PI[15]};
     else if (currentInstructionSet == 4) opc = {PI[13],PI[14],PI[15],PI[16]};
     else opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
 
-    opcode(opc);
-}
+    int operand = getOperand();
 
-// Executes instruction
-bool Simulator::execute(){
-    return !memory.empty();
+    execute(opc, operand);
 }
-
-//OLD EXECUTE FUNCTION
-// bool Simulator::execute(){
-//     if (memory.empty()){
-//         return false;
-//     }else{
-//         return true;
-//     }
-// }
 
 vector<int> Simulator::findLineInMemory(int linNum)
 {
@@ -181,7 +174,7 @@ vector<int> Simulator::findLineInMemory(int linNum)
 //Gets the opperand and returns it in decimal value
 int Simulator::getOperand(){
     //Creates operand vector that has the values between 0 and 5 in the PI
-    vector<int> operand{PI[0], PI[1], PI[2], PI[3], PI[4], PI[5], PI[6], PI[7], PI[8], PI[9], PI[10], PI[11], PI[13]};
+    vector<int> operand{PI[0], PI[1], PI[2], PI[3], PI[4], PI[5], PI[6], PI[7], PI[8], PI[9], PI[10], PI[11], PI[12]};
 
     //Converts the operand from bin to dec and returns it
     return binaryToDec(operand);
@@ -265,6 +258,13 @@ void Simulator::opcode(vector<int> opc){
 
 vector<int> Simulator::decToBinary(int num)
 {
+    bool negative = false;
+    if (num < 0)
+    {
+        negative = true;
+        num = num * (-1);
+    }
+
     // Store binary as string to ensure initial 0's are not ignored
     string bin = "";
     while (num > 0)
@@ -274,12 +274,22 @@ vector<int> Simulator::decToBinary(int num)
     }
 
     vector<int> v;
+    int count = 0;
 
     // For each character in string, convert into int and store in vector
     for (char ch : bin)
     {
         int n = stoi(&ch);
         v.push_back(n);
+        count++;
+    }
+
+    for (int i = count; i < sizeOfMemLoca; i++)
+        v.push_back(0);
+
+    if (negative)
+    {   
+        v[v.size() - 1] = 1;
     }
 
     return v;
@@ -287,6 +297,16 @@ vector<int> Simulator::decToBinary(int num)
 
 int Simulator::binaryToDec(vector<int> num)
 {
+    bool negative = false;
+    if (num.size() == sizeOfMemLoca)
+    {
+        if (num[sizeOfMemLoca-1] == 1)
+        {
+            negative = true;
+            num[sizeOfMemLoca-1] = 0;
+        }
+    }
+
     // Store decimal and base
     int dec = 0, base = 1;
 
@@ -295,27 +315,42 @@ int Simulator::binaryToDec(vector<int> num)
 
     // TEST: Print reversed vector
     // for (auto element : num)
-    // 	cout << element;
+    //     cout << element;
     // cout << endl;
     
     // Store each element of vector into string
+
+    if (num.size() == sizeOfMemLoca-1)
+    {
+        while(num[num.size()-1] == 0)
+        {
+            num.pop_back();
+            if (num.empty())
+                return 0;
+        }
+    }
+
+
     stringstream ss;
     for(int i = 0; i < num.size(); ++i)
     {
-    ss << num[i];
+        ss << num[i];
     }
     string s = ss.str();
 
     // Convert to binary
-    int temp = stoi(s);
+    long long temp = stoll(s);
     while (temp)
     {
-        int lastDigit = temp % 10;
+        long long lastDigit = temp % 10;
         temp = temp / 10;
         dec += lastDigit * base;
         base = base * 2;
     }
 
+    if (negative)
+        dec = dec * (-1);
+    
     return dec;
 }
 
@@ -366,9 +401,9 @@ void displayMenu()
                         continue;
                     sim.fetch();
                     sim.decode();
-                    sim.execute();
+                    // sim.execute(); // execute is called within decode
                     sim.display();
-                    sleep(1);
+                    sleep(3);
                 }
                 break;
             }
