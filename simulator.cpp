@@ -12,8 +12,6 @@
 #include <unistd.h>
 #endif
 
-
-
 #include "Simulator.h"
 #include <iostream>
 #include <cstring>
@@ -97,6 +95,7 @@ bool Simulator::readFromFile()
             v.push_back(temp); 
         }
         memory.push_back(v); // Push vector into memory
+	    count++;
     }
 
     f.close();
@@ -182,7 +181,7 @@ vector<int> Simulator::findLineInMemory(int linNum)
 //Gets the opperand and returns it in decimal value
 int Simulator::getOperand(){
     //Creates operand vector that has the values between 0 and 5 in the PI
-    vector<int> operand(PI.begin(), PI.begin() + 5);
+    vector<int> operand{PI[0], PI[1], PI[2], PI[3], PI[4], PI[5], PI[6], PI[7], PI[8], PI[9], PI[10], PI[11], PI[13]};
 
     //Converts the operand from bin to dec and returns it
     return binaryToDec(operand);
@@ -194,7 +193,7 @@ void Simulator::JMP(){
     int operand = getOperand();
     
     //Sets the current instruction to be the line of the store location defined by the operand
-    CI = findLineInMemory(operand);
+    CI = memory[operand];
 }
 
 //Add content of store location to CI
@@ -231,6 +230,7 @@ void Simulator::STP(){
 //Displays memory state
 void Simulator::display(){
     //Iterates from 0 to the size of the memory
+    cout << "MEMORY: " << endl;
     for(int i = 0; i < memory.size(); i++)
     {
         for (int j = 0; j < memory[i].size(); j++)
@@ -238,9 +238,13 @@ void Simulator::display(){
             //Outputs memory at the location of [i][j]
             cout << memory[i][j];
         }
-        cout << endl;
+        cout << " Address " << i << endl;
     }
+    cout << endl;
 
+    cout << getCI() << " ; CI" << endl;
+    cout << getPI() << " ; PI" << endl;
+    cout << getAccumulator() << " ; Accumulator" << endl;
 }
 
 // OPCODE functions 
@@ -258,7 +262,6 @@ void Simulator::opcode(vector<int> opc){
         case 7: Simulator::STP(); break;
     }
 }
-
 
 vector<int> Simulator::decToBinary(int num)
 {
