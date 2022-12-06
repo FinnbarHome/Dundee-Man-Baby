@@ -12,6 +12,8 @@
 #include <unistd.h>
 #endif
 
+
+
 #include "Simulator.h"
 #include <iostream>
 #include <cstring>
@@ -167,7 +169,7 @@ void Simulator::decode(){
 
 //Executes instruction
 bool Simulator::execute(){
-
+    
     if (memory.empty())
         return false;
 
@@ -214,11 +216,12 @@ void Simulator::STP(){
 
 //Displays memory state
 void Simulator::display(){
-
+    //Iterates from 0 to the size of the memory
     for(int i = 0; i < memory.size(); i++)
     {
         for (int j = 0; j < memory[i].size(); j++)
         {
+            //Outputs memory at the location of [i][j]
             cout << memory[i][j];
         }
         cout << endl;
@@ -226,10 +229,11 @@ void Simulator::display(){
 
 }
 
-// OPCODE functions (use case statements)
+// OPCODE functions 
 void Simulator::opcode(vector<int> opc){
     int num = binaryToDec(opc);
     
+    //Switch statement to select the op code
     switch (num){
         case 0: Simulator::JMP();
             break;
@@ -307,28 +311,7 @@ int Simulator::binaryToDec(vector<int> num)
     return dec;
 }
 
-
-// void run(){
-// 	// Create new instance of simulator
-// 	Simulator sim;
-
-// 	// Should loop until STP function is recieved
-// 	while (sim.getLamp() == false)
-// 	{
-// 		sim.increment_CI();
-// 		sim.fetch();
-// 		sim.decode();
-// 		sim.execute();
-// 		sim.display_everything();
-// 	}
-// }
-
-int main()
-{
-	displayMenu();
-	return 0;
-}
-
+//Menu method
 void displayMenu()
 {
     Simulator sim;
@@ -444,4 +427,11 @@ void displayMenu()
 	    }
         }
     }
+}
+
+//Main method to simply run the menu method
+int main()
+{
+	displayMenu();
+	return 0;
 }
