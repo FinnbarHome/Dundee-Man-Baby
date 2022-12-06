@@ -35,6 +35,7 @@ public:
     vector<int> decToBinary(int num);
     int binaryToDec(vector<int> num);
 
+    //Opcode and opperand methods
     int getOperand();
     vector<int> findLineInMemory(int linNum);
 
@@ -46,7 +47,14 @@ public:
     void STO();
     void CMP();
     void STP();
-
+    void JMPA();
+    void JRPA();
+    void LDNA();
+    void ADDA();
+    void SUBA();
+    void ADD();
+    void DIV();
+    void MUL();
 
     //Display methods
     void display();

@@ -255,6 +255,46 @@ void Simulator::STP(){
     setLamp(true);
 }
 
+//Sets CI to the decimal form of the operand passed in the instruction
+void Simulator::JMPA(){
+
+}
+
+//Add decimal form of the operand passed in the instruction to CI
+void Simulator::JRPA(){
+
+}
+
+//Load accumulator with negative and decimal form of the operand passed in the instruction
+void Simulator::LDNA(){
+
+}
+
+//Add decimal form of the operand passed in the instruction to accumulator
+void Simulator::ADDA(){
+    
+}
+
+// /Subtract decimal form of the operand passed in the instruction from accumulator
+void Simulator::SUBA(){
+
+}
+
+//Add content of store location to accumulator
+void Simulator::ADD(){
+
+}
+
+//Divide accumulator by the content of store location
+void Simulator::DIV(){
+
+}
+
+//Multiply accumulator by the content of store location 
+void Simulator::MUL(){
+
+}
+
 //Displays memory state
 void Simulator::display(){
     //Iterates from 0 to the size of the memory
