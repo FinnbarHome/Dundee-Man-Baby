@@ -137,12 +137,9 @@ void Simulator::increment_CI(){
     CI = decToBinary(num);
 }
 
-//Fetchs next instruction from store
+// Fetchs next instruction from store
 void Simulator::fetch(){
-
-    int dec = binaryToDec(CI);
-    PI = memory[dec];
-
+    PI = memory[binaryToDec(CI)];
 }
 
 //Decodes 5 bit operand and 3 bit opcode
