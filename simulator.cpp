@@ -189,9 +189,16 @@ void Simulator::JMP(){
     CI = memory[operand];
 }
 
-//Add content of store location to CI
-void Simulator::JRP(){
-    
+// Add content of store location to CI
+void Simulator::JRP() {
+    // Get operand of PI
+    int operand = getOperand();
+
+    // Convert memory[operand] to decimal
+    int store = binaryToDec(memory[operand]);
+
+    // Add store to int value of CI, convert result to binary and set it as the new CI
+    setCI(decToBinary(store + binaryToDec(getCI())));
 }
 
 //Load accumulator with negative form of store content 
