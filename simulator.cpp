@@ -27,8 +27,10 @@
 namespace fs = std::filesystem;
 using namespace std;
 
+//Declare menu method
 void displayMenu();
 
+//Method to read machine code from a file and load into a vector
 bool Simulator::readFromFile()
 {
     ifstream f;
@@ -145,26 +147,14 @@ void Simulator::fetch(){
 
 //Decodes 5 bit operand and 3 bit opcode
 void Simulator::decode(){
-
     CI.assign(32,0);
 
     vector<int> opc;
-    if(currentInstructionSet == 3)
-    {
-        opc = {PI[13],PI[14],PI[15]};
-        opcode(opc);
-    }
-    else if(currentInstructionSet == 4)
-    {
-        opc = {PI[13],PI[14],PI[15],PI[16]};
-        opcode(opc);
-    }
-    else
-    {
-        opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
-        opcode(opc);
-    }
+    if (currentInstructionSet == 3) opc = {PI[13],PI[14],PI[15]};
+    else if (currentInstructionSet == 4) opc = {PI[13],PI[14],PI[15],PI[16]};
+    else opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
 
+    opcode(opc);
 }
 
 //Executes instruction
