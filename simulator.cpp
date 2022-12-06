@@ -154,15 +154,19 @@ void Simulator::decode(){
     opcode(opc);
 }
 
-//Executes instruction
+// Executes instruction
 bool Simulator::execute(){
-
-    if (memory.empty())
-        return false;
-
-    return true;
-
+    return !memory.empty();
 }
+
+//OLD EXECUTE FUNCTION
+// bool Simulator::execute(){
+//     if (memory.empty()){
+//         return false;
+//     }else{
+//         return true;
+//     }
+// }
 
 
 //Set CI to content of store location
