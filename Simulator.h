@@ -18,7 +18,7 @@ private:
     vector<int> PI;                 // Present Instruction/Instruction Decode
     vector<vector<int>> memory;     // 32x32bit memory
     int currentInstructionSet;
-    bool lamp;              //Stop lamp, if true, lamp is on therefore program ends
+    bool lamp;                      //Stop lamp, if true, lamp is on therefore program ends
     int sizeOfMemory;
     int sizeOfMemLoca;
 
@@ -31,8 +31,12 @@ public:
     bool execute();
     void opcode(vector<int> opc);
 
+    //Binary-Decimal conversions
     vector<int> decToBinary(int num);
     int binaryToDec(vector<int> num);
+
+    int getOperand();
+    vector<int> findLineInMemory(int linNum);
 
     //Opcodes
     void JMP();
@@ -76,7 +80,6 @@ public:
     {
         return accumulator;
     }
-
 
     //Setters
     void setLamp(bool l){

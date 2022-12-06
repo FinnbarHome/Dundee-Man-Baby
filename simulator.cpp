@@ -166,10 +166,35 @@ bool Simulator::execute(){
 //     }
 // }
 
+vector<int> Simulator::findLineInMemory(int linNum)
+{
+	//Intialises a vector with size of memorysize (32) and intialises all to be 0
+    vector<int> ins(sizeOfMemory, 0);
+
+    //Iterates through whole line to the size of the memory (32)
+	for (int i=0; i<sizeOfMemory; i++)
+	{
+		ins[i] = ins[i] + memory[linNum][i];
+	}
+	return ins;
+}
+
+//Gets the opperand and returns it in decimal value
+int Simulator::getOperand(){
+    //Creates operand vector that has the values between 0 and 5 in the PI
+    vector<int> operand(PI.begin(), PI.begin() + 5);
+
+    //Converts the operand from bin to dec and returns it
+    return binaryToDec(operand);
+}
 
 //Set CI to content of store location
 void Simulator::JMP(){
-
+    //Gets opperand of PI
+    int operand = getOperand();
+    
+    //Sets the current instruction to be the line of the store location defined by the operand
+    CI = findLineInMemory(operand);
 }
 
 //Add content of store location to CI
