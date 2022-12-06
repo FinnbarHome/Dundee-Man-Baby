@@ -125,14 +125,14 @@ bool Simulator::readFromFile()
 void Simulator::increment_CI(){
 
     int num = binaryToDec(CI);
-    num += 1;
+    num++;
+
     if(num > sizeOfMemory)
     {
         setLamp(true);
     }
-    vector<int> memloca = decToBinary(num);
-    CI = memloca;
-
+    
+    CI = decToBinary(num);
 }
 
 //Fetchs next instruction from store
@@ -169,7 +169,7 @@ void Simulator::decode(){
 
 //Executes instruction
 bool Simulator::execute(){
-    
+
     if (memory.empty())
         return false;
 
