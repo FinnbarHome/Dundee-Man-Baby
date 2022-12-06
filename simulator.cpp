@@ -246,7 +246,11 @@ void Simulator::SUB(){
 
 //Increment CI if Accumulator value negative otherwise do nothing
 void Simulator::CMP(){
-
+    //Convert accumulator value to dec if its less than 0 its negative 
+    if(binaryToDec(getAccumulator()) < 0){
+        //therefore increment CI
+        increment_CI();
+    }
 }
 
 //Halts machine
@@ -257,7 +261,7 @@ void Simulator::STP(){
 
 //Sets CI to the decimal form of the operand passed in the instruction
 void Simulator::JMPA(){
-
+    
 }
 
 //Add decimal form of the operand passed in the instruction to CI
@@ -272,7 +276,7 @@ void Simulator::LDNA(){
 
 //Add decimal form of the operand passed in the instruction to accumulator
 void Simulator::ADDA(){
-    
+
 }
 
 // /Subtract decimal form of the operand passed in the instruction from accumulator
