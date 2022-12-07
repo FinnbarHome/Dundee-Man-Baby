@@ -12,6 +12,7 @@ using namespace std;
 class Assembler
 {
 private:
+    vector<vector<string>> cleanInput; //Holds cleaned input file
     vector<vector<string>> output; // Holds finished output containing machine code
     vector<string> mnemonics = {"JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP"};
     vector<int> opcodes = {0, 1, 2, 3, 4, 5, 6};
