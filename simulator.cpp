@@ -259,44 +259,103 @@ void Simulator::STP(){
     setLamp(true);
 }
 
-//Sets CI to the decimal form of the operand passed in the instruction
-void Simulator::JMPA(){
+// Sets CI to the decimal form of the operand passed in the instruction
+void Simulator::DJP()
+{
+    int operand = getOperand();
+
+    vector<int> num = decToBinary(operand);
+
+    CI = num;
 
 }
 
 //Add decimal form of the operand passed in the instruction to CI
-void Simulator::JRPA(){
+void Simulator::DJR()
+{
+    int operand = getOperand();
 
+    int num = binaryToDec(CI);
+
+    num = operand + num;
+
+    CI = decToBinary(num);
 }
 
 //Load accumulator with negative and decimal form of the operand passed in the instruction
-void Simulator::LDNA(){
+void Simulator::DLD()
+{
+    int operand = getOperand();
 
+    operand = operand * (-1);
+
+    accumulator = decToBinary(operand);
 }
 
-//Add decimal form of the operand passed in the instruction to accumulator
-void Simulator::ADDA(){
+// Add decimal form of the operand passed in the instruction to accumulator
+void Simulator::DAD()
+{
+    int operand = getOperand();
 
+    int num = binaryToDec(accumulator);
+
+    operand = operand + num;
+
+    accumulator = decToBinary(operand);
 }
 
-// /Subtract decimal form of the operand passed in the instruction from accumulator
-void Simulator::SUBA(){
+//Subtract decimal form of the operand passed in the instruction from accumulator
+void Simulator::DSB()
+{
+    int operand = getOperand();
 
+    int num = binaryToDec(accumulator);
+
+    operand = num - operand;
+
+    accumulator = decToBinary(operand);
 }
 
 //Add content of store location to accumulator
-void Simulator::ADD(){
+void Simulator::ADD()
+{
+    int operand = getOperand();
 
+    operand = binaryToDec(memory[operand]);
+
+    int num = binaryToDec(accumulator);
+
+    operand = operand + num;
+
+    accumulator = decToBinary(operand);
 }
 
-//Divide accumulator by the content of store location
-void Simulator::DIV(){
+// Divide accumulator by the content of store location
+void Simulator::DIV()
+{
+    int operand = getOperand();
 
+    operand = binaryToDec(memory[operand]);
+
+    int num = binaryToDec(accumulator);
+
+    operand = num/operand;
+
+    accumulator = decToBinary(operand);
 }
 
-//Multiply accumulator by the content of store location 
-void Simulator::MUL(){
+// Multiply accumulator by the content of store location
+void Simulator::MUL()
+{
+    int operand = getOperand();
 
+    operand = binaryToDec(memory[operand]);
+
+    int num = binaryToDec(accumulator);
+
+    operand = num * operand;
+
+    accumulator = decToBinary(operand);
 }
 
 //Displays memory state
@@ -332,6 +391,14 @@ void Simulator::opcode(vector<int> opc){
         case 4: case 5: Simulator::SUB(); break; // combine cases 4 and 5
         case 6: Simulator::CMP(); break;
         case 7: Simulator::STP(); break;
+	case 8: Simulator::DJP(); break;
+	case 9: Simulator::DJR(); break;
+	case 10: Simulator::DLD(); break;
+	case 11: Simulator::DAD(); break;
+	case 12: Simulator::DSB(); break;
+	case 13: Simulator::ADD(); break;
+	case 14: Simulator::DIV(); break;
+	case 15: Simulator::MUL(); break;
     }
 }
 
