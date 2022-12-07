@@ -28,8 +28,7 @@ public:
     bool readFromFile();
     void fetch();
     void decode();
-    bool execute();
-    void opcode(vector<int> opc);
+    void execute(vector<int> opc);
 
     //Binary-Decimal conversions
     vector<int> decToBinary(int num);
