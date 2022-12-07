@@ -48,7 +48,31 @@ int Assembler::mnemonicToOpcode(string mnemonic)
 // Clean input file to assemble
 void Assembler::formatInput()
 {
-
+    ifstream read(inputFile);
+    string line;
+    vector<string> temp;
+    string s;
+    while(getline(read, line)){    //iterate through lines in input file
+        for(char& c : line){       //iterate through chars in line
+            if(c == ' ' && !s.empty()){
+                temp.push_back(s);
+                s = "";
+            }
+            else if(c == ';'){          //move to next line if comment
+                break;             
+            }
+            else if(c != ' ' ){         //if not a space add char to temp
+                s += c;
+            }
+        }
+        if(!s.empty()){
+            temp.push_back(s);
+        }
+        if(!temp.empty()){
+            cleanInput.push_back(temp);
+        }
+    }
+    read.close();
 }
 
 // Process file for variables and instructions
