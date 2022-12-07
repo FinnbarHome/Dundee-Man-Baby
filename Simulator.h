@@ -34,9 +34,8 @@ public:
     vector<int> decToBinary(int num);
     int binaryToDec(vector<int> num);
 
-    //Opcode and opperand methods
+    //Opcode and operand methods
     int getOperand();
-    vector<int> findLineInMemory(int linNum);
 
     //Opcodes
     void JMP();
@@ -73,11 +72,6 @@ public:
         return PI;
     }
 
-    vector<vector<int>> getMemory()
-    {
-        return memory;
-    }
-
     int getInstructionSet()
     {
         return currentInstructionSet;
@@ -86,6 +80,16 @@ public:
     vector<int> getAccumulator()
     {
         return accumulator;
+    }
+	
+    int getMemorySize()
+    {
+        return sizeOfMemory;
+    }
+
+    int getMemLocaSize()
+    {
+        return sizeOfMemLoca;
     }
 
     //Setters
