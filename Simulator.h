@@ -47,11 +47,11 @@ public:
     void STO();
     void CMP();
     void STP();
-    void JMPA();
-    void JRPA();
-    void LDNA();
-    void ADDA();
-    void SUBA();
+    void DJP();
+    void DJR();
+    void DLD();
+    void DAD();
+    void DSB();
     void ADD();
     void DIV();
     void MUL();
