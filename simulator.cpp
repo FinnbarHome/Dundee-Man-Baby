@@ -211,7 +211,7 @@ void Simulator::LDN(){
     int store = binaryToDec(memory[operand]);
 
     //Negates store
-    int store = -store;
+    store = -store;
 
     //Sets accumulator as binary conversion of store
     setAccumulator(decToBinary(store));
@@ -261,7 +261,7 @@ void Simulator::STP(){
 
 //Sets CI to the decimal form of the operand passed in the instruction
 void Simulator::JMPA(){
-    
+
 }
 
 //Add decimal form of the operand passed in the instruction to CI
