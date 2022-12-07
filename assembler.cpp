@@ -21,7 +21,17 @@ void Assembler::setInstructions()
 
 void Assembler::displayOutput()
 {
+	for(int i = 0; i< output.size(); i++)
+    {
 
+        for(int j = 0; j<output.at(i).size(); j++)
+        {
+
+            cout << output.at(i).at(j) << "\t";
+        }
+
+        cout << endl;
+    }
 }
 
 // Grab corresponding opcode for mnemonic
