@@ -27,7 +27,12 @@ void Assembler::displayOutput()
 // Grab corresponding opcode for mnemonic
 int Assembler::mnemonicToOpcode(string mnemonic)
 {
-
+    for(int i=0; i<mnemonics.size(); ++i){       //iterate through set mnemonics
+        if(mnemonics.at(i) == mnemonic){
+            return opcodes.at(i);                //if found returns corresponding opcode
+        }
+    }
+    return -1; //mnemonic not found in set
 }
 
 // Clean input file to assemble
