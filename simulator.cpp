@@ -32,12 +32,19 @@ void displayMenu();
 bool Simulator::readFromFile()
 {
     ifstream f;
-
+    cout << "\nCURRENT TEXT FILES IN DIRECTORY:\n";
     // Iterate through ONLY .txt files in current directory 
-    // ***FIX NEEDED FOR SHOWING TXT ONLY***
     for (const auto & entry : fs::directory_iterator("./"))
-        cout << entry.path() << endl;
-	
+    {
+        string name = entry.path();
+
+        string str = name.substr(2); // Trim the "./" at start of string
+        int pos = str.find(".");
+        string sub = str.substr(pos + 1);
+
+        if (sub == "txt") // Check if it is a txt file
+            cout << str << endl;;
+    }
     cout << "\nWhich machine code file would you like to read in? (include .txt at end): ";
     string c;
     cin >> c;
@@ -57,17 +64,10 @@ bool Simulator::readFromFile()
     string line;
     while(getline(f, line)) 
     {
-	//STILL TO PROPERLY IMPLEMENT: formatting of line to strip spaces
-        // line.erase(remove(line.begin(),line.end(),' '),line.end());
-        // line.erase(remove(line.begin(),line.end(),'\n'),line.end());
-        //cout << line.length() << "AHHH" << endl;
-	    
+
 	// Ensure number of lines does not exceed size of memory
         if (count > sizeOfMemory)
             return false;
-
-        //cout << count << ": LINE LEN: " << line.length()-1 << endl;
-        //cout << "MEM LOCA: " << sizeOfMemLoca << endl;
 
         // Ensure line of length matches size of memory location
         if ((line.length()-1) != sizeOfMemLoca)
@@ -106,18 +106,6 @@ bool Simulator::readFromFile()
         vector<int> vec(32, 0);
         memory.push_back(vec);
     }
-	
-    // for(int i = 0; i < memory.size(); i++)
-    // {
-    // 	cout << "MEMORY(i): " << memory.size() << endl;
-    // 	for (int j = 0; j < memory[i].size(); j++)
-    // 	{
-    // 		if (j == 0)
-    // 			cout << "MEMORY(j): " << memory[j].size() << endl;
-    // 		cout << memory[i][j];
-    // 	}
-    // 	cout <<endl;
-    // }
 
     return true;
 }
@@ -153,22 +141,7 @@ void Simulator::decode(){
     else if (currentInstructionSet == 4) opc = {PI[13],PI[14],PI[15],PI[16]};
     else opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
 
-    int operand = getOperand();
-
-    execute(opc, operand);
-}
-
-vector<int> Simulator::findLineInMemory(int linNum)
-{
-	//Intialises a vector with size of memorysize (32) and intialises all to be 0
-    vector<int> ins(sizeOfMemory, 0);
-
-    //Iterates through whole line to the size of the memory (32)
-	for (int i=0; i<sizeOfMemory; i++)
-	{
-		ins[i] = ins[i] + memory[linNum][i];
-	}
-	return ins;
+    execute(opc);
 }
 
 //Gets the opperand and returns it in decimal value
@@ -267,7 +240,6 @@ void Simulator::DJP()
     vector<int> num = decToBinary(operand);
 
     CI = num;
-
 }
 
 //Add decimal form of the operand passed in the instruction to CI
@@ -373,9 +345,9 @@ void Simulator::display(){
     }
     cout << endl;
 
-    cout << getCI() << " ; CI" << endl;
+    cout << getCI() << " ; CI (in decimal: " << binaryToDec(getCI()) << ")" endl;
     cout << getPI() << " ; PI" << endl;
-    cout << getAccumulator() << " ; Accumulator" << endl;
+    cout << getAccumulator() << " ; Accumulator (in decimal: " << binaryToDec(getAccumulator()) << ")" << endl;
 }
 
 // OPCODE functions 
@@ -458,14 +430,8 @@ int Simulator::binaryToDec(vector<int> num)
 
     // Reverse vector to account for big-endian
     reverse(num.begin(), num.end());
-
-    // TEST: Print reversed vector
-    // for (auto element : num)
-    //     cout << element;
-    // cout << endl;
     
     // Store each element of vector into string
-
     if (num.size() == sizeOfMemLoca-1)
     {
         while(num[num.size()-1] == 0)
@@ -475,7 +441,6 @@ int Simulator::binaryToDec(vector<int> num)
                 return 0;
         }
     }
-
 
     stringstream ss;
     for(int i = 0; i < num.size(); ++i)
@@ -526,17 +491,14 @@ void displayMenu()
                 if (sim.readFromFile())
                 {
                     cout << "Read successful and memory updated. Beginning program..." << endl;
-                    // cout << "Current state of memory: \n" << endl;
-                    // sim.display();
-                    cout << endl;
-                    sleep(1);
+                    sleep(3);
                 }
                 else
                 {
                     cout << "Read unsuccessful. Memory has been emptied.\n" << endl;
                     break;
                 }
-                int count = 0;
+                //int count = 0;
                 // Should loop until STP function is recieved
                 while (sim.getLamp() == false)
                 {
@@ -546,10 +508,15 @@ void displayMenu()
                     if(sim.getLamp())
                         continue;
                     sim.fetch();
-                    sim.decode();
-                    // sim.execute(); // execute is called within decode
+                    cout << "\n**FETCHING...**\n" << endl;
                     sim.display();
-                    sleep(3);
+                    sleep(2);
+                    system("clear");
+                    sim.decode();
+                    cout << "\nTerminate program by CTRL+C, or automatically return to menu once stop lamp is set by the program.\n";
+                    cout << "\n**DECODING AND EXECUTING...**\n" << endl;
+                    sim.display();
+                    sleep(2);
                 }
                 break;
             }
