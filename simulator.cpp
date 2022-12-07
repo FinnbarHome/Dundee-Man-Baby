@@ -345,13 +345,13 @@ void Simulator::display(){
     }
     cout << endl;
 
-    cout << getCI() << " ; CI (in decimal: " << binaryToDec(getCI()) << ")" endl;
+    cout << getCI() << " ; CI (in decimal: " << binaryToDec(getCI()) << ")" << endl;
     cout << getPI() << " ; PI" << endl;
     cout << getAccumulator() << " ; Accumulator (in decimal: " << binaryToDec(getAccumulator()) << ")" << endl;
 }
 
 // OPCODE functions 
-void Simulator::opcode(vector<int> opc){
+void Simulator::execute(vector<int> opc){
     int num = binaryToDec(opc);
 
     // Switch statement to select the op code
