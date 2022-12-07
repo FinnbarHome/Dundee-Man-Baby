@@ -64,14 +64,19 @@ bool Simulator::readFromFile()
     string line;
     while(getline(f, line)) 
     {
-
-	// Ensure number of lines does not exceed size of memory
+	 // Ensure number of lines does not exceed size of memory
         if (count > sizeOfMemory)
+        {
+            cout << "File contents exceeds size of memory." << endl;
             return false;
+        }
 
         // Ensure line of length matches size of memory location
         if ((line.length()-1) != sizeOfMemLoca)
+        {
+            cout << "File contents exceeds bit size." << endl;
             return false;
+        }
 	   
         // Insert each character of each line into a vector
         vector<int> v;
@@ -88,7 +93,7 @@ bool Simulator::readFromFile()
                 // clear input buffer
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+		cout << "File includes non-binary characters." << endl;
                 return false;
             }
             
@@ -122,11 +127,9 @@ void Simulator::increment_CI(){
 
     if (getLamp())
         return;
-
     
     // Convert the new value back to a binary and store it in CI
     CI = decToBinary(num);
-    //cout << getCI() << endl;
 }
 
 // Fetchs next instruction from store
@@ -137,14 +140,21 @@ void Simulator::fetch(){
 //Decodes 5 bit operand and 3 bit opcode
 void Simulator::decode(){
     vector<int> opc;
-    if (currentInstructionSet == 3) opc = {PI[13],PI[14],PI[15]};
+    if (currentInstructionSet == 3) 
+    {
+        opc = {PI[13],PI[14],PI[15]};
+        if (PI[16] != 0)
+        {
+            cout << "\n**INVALID OPCODE DETECTED. PROGRAM TERMINATING...**" << endl;
+            exit(1);
+        }
+    }
     else if (currentInstructionSet == 4) opc = {PI[13],PI[14],PI[15],PI[16]};
-    else opc = {PI[13],PI[14],PI[15],PI[16],PI[17]};
 
     execute(opc);
 }
 
-//Gets the opperand and returns it in decimal value
+//Gets the operand and returns it in decimal value
 int Simulator::getOperand(){
     //Creates operand vector that has the values between 0 and 5 in the PI
     vector<int> operand{PI[0], PI[1], PI[2], PI[3], PI[4], PI[5], PI[6], PI[7], PI[8], PI[9], PI[10], PI[11], PI[12]};
@@ -174,7 +184,6 @@ void Simulator::JRP() {
     setCI(decToBinary(store + binaryToDec(getCI())));
 }
 
-//NOT SURE IF THIS WORKS (NOT SURE IF IT HAS TO BE NEGATED BEFORE PASSING INTO BIN CONV ETC)
 //Load accumulator with negative form of store content 
 void Simulator::LDN(){
     //Get operand of PI
@@ -339,7 +348,10 @@ void Simulator::display(){
         for (int j = 0; j < memory[i].size(); j++)
         {
             //Outputs memory at the location of [i][j]
-            cout << memory[i][j];
+            if (memory[i][j] == 0)
+                cout << ".";
+            else
+                cout << "1";
         }
         cout << " Address " << i << endl;
     }
@@ -450,19 +462,28 @@ int Simulator::binaryToDec(vector<int> num)
     string s = ss.str();
 
     // Convert to binary
-    long long temp = stoll(s);
-    while (temp)
+    try
     {
-        long long lastDigit = temp % 10;
-        temp = temp / 10;
-        dec += lastDigit * base;
-        base = base * 2;
-    }
+        long long temp = stoll(s);
 
-    if (negative)
-        dec = dec * (-1);
-    
-    return dec;
+        while (temp)
+        {
+            long long lastDigit = temp % 10;
+            temp = temp / 10;
+            dec += lastDigit * base;
+            base = base * 2;
+        }
+
+        if (negative)
+            dec = dec * (-1);
+        
+        return dec;
+    }
+    catch (out_of_range& e)
+    {
+        cout << "VARIABLE TOO LARGE AND OUT OF RANGE. PROGRAM TERMINATING..." << endl;
+        exit(1);
+    }
 }
 
 //Menu method
@@ -472,12 +493,20 @@ void displayMenu()
 
     bool finished = false;
     int choice;
+    string s;
 
     while(!finished)
     {
-        cout << "MENU" << endl;
-        cout << "1) Load in machine code from file and execute it" << endl;
-        cout << "2) Change instruction set" << endl;
+	// Check if extra instructions to be used
+        if (sim.getInstructionSet() == 3)
+            s = "OFF";
+        else
+            s = "ON";
+	    
+        cout << "\nMENU" << endl;
+	cout << "Current size of memory: " << sim.getMemorySize() << " each with " << sim.getMemLocaSize() << " bits." << endl;    
+        cout << "\n1) Load in machine code from file and execute it" << endl;
+        cout << "2) Turn on/off extra instructions (currently " << s << ")" << endl;
         cout << "3) Change number of memory locations" << endl;
         cout << "4) Change the size of each memory location" << endl;
         cout << "5) Exit" << endl;
@@ -518,39 +547,53 @@ void displayMenu()
                     sim.display();
                     sleep(2);
                 }
+                cout <<"\nEND ACCUMULATOR IN DECIMAL: " << sim.binaryToDec(sim.getAccumulator()) << endl;
+                
+                // Reset
+                sim.setLamp(false);
+                vector <int> v(sim.getMemLocaSize(), 0);
+                sim.setAccumulator(v);
+                sim.setCI(v);
                 break;
             }
             case 2: 
 	    {	    
-		    int num = 0;
-                    cout << "Enter the amount of bits dedicated for the instructions opcodes (3,4 or 5): ";
-                    cin >> num;
-                    while(num != 3 && num != 4 && num != 5)
-                    {
-                        cout << "Invalid entry";
-                        cout << "Enter the amount of bits dedicated for the instructions opcodes (3,4 or 5): ";
-                        cin >> num;
-                    }
-
-                    if(num == 3)
-                        sim.setInstructionSet(num);
-                    else if(num == 4)
-                        sim.setInstructionSet(num);
-                    else
-                        sim.setInstructionSet(num);
-
-                    break;
+		if (sim.getInstructionSet() == 3)
+                {
+                    sim.setInstructionSet(4);
+                    cout << "\n**Extra instructions turned on.**" << endl;
+                }
+                else
+                {
+                    sim.setInstructionSet(3);
+                    cout << "\n**Extra instructions turned off.**" << endl;
+                }
+                
+                cout << "\nExtra instructions: " << endl;
+                cout << "DJP (0001): Sets CI to the decimal form of the operand passed in the instruction" << endl;
+                cout << "DJR (1001): Add decimal form of the operand passed in the instruction to CI" << endl;
+                cout << "DLD (0101): Load accumulator with negative and decimal form of the operand passed in the instruction" << endl;
+                cout << "DAD (1101): Add decimal form of the operand passed in the instruction to accumulator" << endl;
+                cout << "DSB (0011): Subtract decimal form of the operand passed in the instruction from accumulator" << endl;
+                cout << "ADD (1011): Add content of store location to accumulator" << endl;
+                cout << "DIV (0111): Divide accumulator by the content of store location" << endl;
+                cout << "MUL (1111): Multiply accumulator by the content of store location" << endl;
+                
+                break;
 	    }
             case 3: 
 	    {
 		    int num = 33;
-                    cout << "Enter a number for the new amount of memory locations (between 31 and 65): ";
+                    cout << "Enter a number for the new amount of memory locations (between 32 and 64 inclusive):: ";
                     cin >> num;
                     while(num < 32 && num > 64)
                     {
                         cout << "Invalid entry";
-                        cout << "Enter a number for the new amount of memory locations (between 31 and 65): ";
-                        cin >> num;
+                        cout << "Enter a number for the new amount of memory locations (between 32 and 64 inclusive): ";
+                        // clear input buffer
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cin >> num;
                     }
 
                     sim.setMemorySize(num);
@@ -559,13 +602,16 @@ void displayMenu()
             case 4: 
 	    {
 		    int num = 0;
-                    cout << "Enter a number for the new size of each memory location (between 31 and 101): ";
+                    cout << "Enter a number for the new size of each memory location (between 32 and 64 inclusive): ";
                     cin >> num;
-                    while(num < 32 && num > 100)
+                    while(num < 32 && num > 64)
                     {
                         cout << "Invalid entry";
-                        cout << "Enter a number for the new size of each memory location (between 31 and 101): ";
-                        cin >> num;
+                        cout << "Enter a number for the new size of each memory location (between 32 and 64 inclusive): ";
+                        // clear input buffer
+		        cin.clear();
+		        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cin >> num;
                     }
 
                     sim.setMemLocaSize(num);
@@ -579,6 +625,9 @@ void displayMenu()
             default: 
 	    {
 		    cout << "Invalid Input" << endl;
+		    // clear input buffer
+		    cin.clear();
+		    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     break;
 	    }
         }
