@@ -28,27 +28,39 @@ using namespace std;
 //Declare menu method
 void displayMenu();
 
-void Simulator::setColourWhite(){
-    system("Color 07");
+enum COLORS {
+    NC=-1,
+    BLACK,
+    Red,
+    Green,
+    YELLOW,
+    Gray, //ACTUALLY NOT GRAY
+    MAGENTA,
+    CYAN,
+    White,
+};
+
+/**
+* Colorize terminal colors ANSI escape sequences.
+*
+* @param font font color (-1 to 7), see COLORS enum
+**/
+const char* setColour(int font) {
+    static char code[20];
+    if (font >= 0){
+        font += 30;
+    }else{
+        font = 0;
+    }
+    sprintf(code, "\033[%dm", font);
+    return code;
 }
-
-void Simulator::setColourRed(){
-    system("Color 04");
-}   
-
-void Simulator::setColourGray(){
-    system("Color 08");
-}
-
-void Simulator::setColourGreen(){
-    system("Color 02");
-}   
 
 //Method to read machine code from a file and load into a vector
 bool Simulator::readFromFile()
 {
     //Sets text colour as white
-    setColourWhite();
+    cout << setColour(White);
 
     ifstream f;
     cout << "\nCURRENT TEXT FILES IN DIRECTORY:\n";
@@ -159,7 +171,7 @@ void Simulator::fetch(){
 //Decodes 5 bit operand and 3 bit opcode
 void Simulator::decode(){
     //Sets text colour as white
-    setColourWhite();
+    cout << setColour(White);
 
     vector<int> opc;
     if (currentInstructionSet == 3) 
@@ -364,10 +376,10 @@ void Simulator::MUL()
 //Displays memory state
 void Simulator::display(){
     //Sets text colour as gray
-    setColourGray();
+    cout << setColour(Gray);
     cout << "MEMORY: " << endl;
     //Sets text colour as white
-    setColourWhite();
+    cout << setColour(White);
 
     //Iterates from 0 to the size of the memory
     for(int i = 0; i < memory.size(); i++)
@@ -385,12 +397,12 @@ void Simulator::display(){
     cout << endl;
 
     //Sets text colour as gray
-    setColourGray();
+    cout << setColour(Gray);
     cout << getCI() << " ; CI (in decimal: " << binaryToDec(getCI()) << ")" << endl;
     cout << getPI() << " ; PI" << endl;
     cout << getAccumulator() << " ; Accumulator (in decimal: " << binaryToDec(getAccumulator()) << ")" << endl;
     //Sets text colour as white
-    setColourWhite();
+    cout << setColour(White);
 }
 
 // OPCODE functions 
@@ -459,7 +471,7 @@ vector<int> Simulator::decToBinary(int num)
 int Simulator::binaryToDec(vector<int> num)
 {
     //Sets text colour as white
-    setColourWhite();
+    cout << setColour(White);
 
     bool negative = false;
     if (num.size() == sizeOfMemLoca)
@@ -517,11 +529,11 @@ int Simulator::binaryToDec(vector<int> num)
     {
         
         //Sets text colour red
-        setColourRed();
+        cout << setColour(Red);
         cout << "ERROR: VARIABLE TOO LARGE AND OUT OF RANGE. PROGRAM TERMINATING..." << endl;
 
         //Sets text colour as white
-        setColourWhite();
+        cout << setColour(White);
         exit(1);
     }
 }
@@ -533,7 +545,7 @@ void displayMenu()
     Simulator sim;
 
     //Sets text colour as white
-    sim.setColourWhite();
+    cout << setColour(White);
 
     //Boolean for whether menu loop has finished
     bool finished = false;
@@ -567,20 +579,20 @@ void displayMenu()
                 if (sim.readFromFile())
                 {
                     //Sets text colour as green
-                    sim.setColourGreen();
+                    cout << setColour(Green);
                     cout << "Read successful and memory updated. Beginning program..." << endl;
                     //Sets text colour as white
-                    sim.setColourWhite();
+                    cout << setColour(White);
 
                     sleep(3);
                 }
                 else
                 {
                     //Sets text colour red
-                    sim.setColourRed();
+                    cout << setColour(Red);
                     cout << "ERROR: Read unsuccessful. Memory has been emptied.\n" << endl;
                     //Sets text colour as white
-                    sim.setColourWhite();
+                    cout << setColour(White);
                     break;
                 }
                 //int count = 0;
@@ -588,7 +600,7 @@ void displayMenu()
                 while (sim.getLamp() == false)
                 {
                     //Sets text colour as white
-                    sim.setColourWhite();
+                    cout << setColour(White);
                     
                     // Clear screen after every cycle
                     system("clear"); 
@@ -602,11 +614,11 @@ void displayMenu()
                     sim.fetch();
 
                     //Sets text colour as gray
-                    sim.setColourGray();
+                    cout << setColour(Gray);
                     cout << "\n**FETCHING...**\n" << endl;
 
                     //Sets text colour as white
-                    sim.setColourWhite();
+                    cout << setColour(White);
                     sim.display();
 
                     sleep(2);
@@ -616,19 +628,19 @@ void displayMenu()
                     cout << "\nTerminate program by CTRL+C, or automatically return to menu once stop lamp is set by the program.\n";
 
                     //Sets text colour as gray
-                    sim.setColourGray();
+                    cout << setColour(Gray);
                     cout << "\n**DECODING AND EXECUTING...**\n" << endl;
                     //Sets text colour as white
-                    sim.setColourWhite();
+                    cout << setColour(White);
 
                     sim.display();
                     sleep(2);
                 }
                 //Sets text colour as gray
-                sim.setColourGray();
+                cout << setColour(Gray);
                 cout <<"\nEND ACCUMULATOR IN DECIMAL: " << sim.binaryToDec(sim.getAccumulator()) << endl;
                 //Sets text colour as white
-                sim.setColourWhite();
+                cout << setColour(White);
 
                 // Reset
                 sim.setLamp(false);
@@ -642,24 +654,24 @@ void displayMenu()
 		if (sim.getInstructionSet() == 3)
                 {
                     //Sets text colour as green
-                    sim.setColourGreen();
+                    cout << setColour(Green);
 
                     sim.setInstructionSet(4);
                     cout << "\n**Extra instructions turned on.**" << endl;
 
                     //Sets text colour as white
-                    sim.setColourWhite();
+                    cout << setColour(White);
                 }
                 else
                 {
                     //Sets text colour as red
-                    sim.setColourRed();
+                    cout << setColour(Red);
 
                     sim.setInstructionSet(3);
                     cout << "\n**Extra instructions turned off.**" << endl;
 
                     //Sets text colour as white
-                    sim.setColourWhite();
+                    cout << setColour(White);
                 }
                 cout << "\nExtra instructions: " << endl;
                 cout << "DJP (0001): Sets CI to the decimal form of the operand passed in the instruction" << endl;
@@ -681,10 +693,10 @@ void displayMenu()
                     while(num < 32 && num > 64)
                     {
                         //Sets text colour as red
-                        sim.setColourRed();
+                        cout << setColour(Red);
                         cout << "ERROR: Invalid entry";
                         //Sets text colour as white
-                        sim.setColourWhite();
+                        cout << setColour(White);
 
                         cout << "Enter a number for the new amount of memory locations (between 32 and 64 inclusive): ";
                         // clear input buffer
@@ -703,10 +715,10 @@ void displayMenu()
                     while(num < 32 && num > 64)
                     {
                         //Sets text colour as red
-                        sim.setColourRed();
+                        cout << setColour(Red);
                         cout << "ERROR: Invalid entry";
                         //Sets text colour as white
-                        sim.setColourWhite();
+                        cout << setColour(White);
 
                         cout << "Enter a number for the new size of each memory location (between 32 and 64 inclusive): ";
                         // clear input buffer
@@ -726,10 +738,10 @@ void displayMenu()
             default: 
 	    {
             //Sets text colour as red
-            sim.setColourRed();
+            cout << setColour(Red);
 		    cout << "ERROR: Invalid Input" << endl;
             //Sets text colour as white
-            sim.setColourWhite();
+            cout << setColour(White);
 
 		    // clear input buffer
 		    cin.clear();
