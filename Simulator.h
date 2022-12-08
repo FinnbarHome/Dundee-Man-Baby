@@ -56,7 +56,10 @@ public:
 
     //Display methods
     void display();
-
+    void setColourWhite();
+    void setColourRed();
+    void setColourGray();
+    void setColourGreen();
 
     //Getters 
     bool getLamp(){
