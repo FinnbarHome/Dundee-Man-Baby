@@ -1,3 +1,0 @@
-C:/Users/TheGu/Documents/GitHub/Dundee-Man-Baby/cmake-build-debug/CMakeFiles/Dundee_Man_Baby.dir
-C:/Users/TheGu/Documents/GitHub/Dundee-Man-Baby/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/TheGu/Documents/GitHub/Dundee-Man-Baby/cmake-build-debug/CMakeFiles/rebuild_cache.dir
