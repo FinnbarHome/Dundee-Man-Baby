@@ -121,7 +121,25 @@ vector<int> Assembler::decToBinary(string var)
 // Process file for variables and instructions
 void Assembler::assemble()
 {
+    vector<vector<string>> symbolTable;
+    vector<int> buffer;
+    vector<string> tempv;
+    for(vector<string>& lineVector : cleanInput){ //first pass
+        if(lineVector.at(0) == "VAR"){
+            tempv.push_back("");
+            tempv.push_back(lineVector.at(1));
+        }
+        else if(lineVector.at(1) == "VAR"){
+            tempv.push_back(lineVector.at(0));
+            tempv.push_back(lineVector.at(2));
+        }
+        else if(lineVector.at(0) == "START" || lineVector.at(0) == "END"){
 
+        }
+        else(){
+
+        }
+    }
 }
 
 // Write output machine code into a text file
