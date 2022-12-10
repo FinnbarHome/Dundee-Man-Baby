@@ -75,6 +75,49 @@ void Assembler::formatInput(string inputFile)
     read.close();
 }
 
+
+vector<int> Assembler::decToBinary(string var)
+{
+    
+    int num = stoi(var);
+    bool negative = false;
+    if (num < 0)
+    {
+        negative = true;
+        num = num * (-1);
+    }
+
+    // Store binary as string to ensure initial 0's are not ignored
+    string bin = "";
+    while (num > 0)
+    {
+        bin += to_string(num % 2);
+        num = num / 2;
+    }
+
+    vector<int> v;
+    int count = 0;
+
+    // For each character in string, convert into int and store in vector
+    for (char ch : bin)
+    {
+        int n = stoi(&ch);
+        v.push_back(n);
+        count++;
+    }
+
+    for (int i = count; i < sizeOfMemLoca; i++)
+        v.push_back(0);
+
+    if (negative)
+    {   
+        v[v.size() - 1] = 1;
+    }
+
+    return v;
+}
+
+
 // Process file for variables and instructions
 void Assembler::assemble()
 {
