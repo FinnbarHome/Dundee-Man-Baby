@@ -24,6 +24,7 @@ public:
     void displayOutput();
     int mnemonicToOpcode(string mnemonic); // Grab corresponding opcode for mnemonic
     void formatInput(); // Clean input file to assemble
+    vector<int> decToBinary(string var); // decimal to binary conversion
     void assemble(); // Process file for variables and instructions
     void writeToFile(); // Write output machine code into a text file
 
