@@ -127,13 +127,16 @@ void Assembler::assemble()
 // Write output machine code into a text file
 void Assembler::writeToFile()
 {
-    ofstream f("BabyTest1-MC"); 
-    if (!f.open()){
-        for(int i = 0; i< output.size(); i++){
+   ofstream f("BabyTest1-MC"); 
+    f.open(f);
+    for(int i = 0; i< output.size(); i++){
             for(int j = 0; j<output.at(i).size(); j++){
             f << output.at(i).at(j) << "\t";
         }
         f << endl;
+    }
+    if (!f.open()){
+        cout << "Could not open file of that name - incompatible or does not exist." << endl;
     }
 
     f.close(); 
