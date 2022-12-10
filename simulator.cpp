@@ -105,7 +105,7 @@ bool Simulator::readFromFile()
         // Ensure line of length matches size of memory location
         if ((line.length()-1) != sizeOfMemLoca)
         {
-            cout << "File contents exceeds bit size." << endl;
+            cout << "File contents does not match bit size." << endl;
             return false;
         }
 	   
@@ -630,6 +630,10 @@ void displayMenu()
                     //Sets text colour as gray
                     cout << setColour(Gray);
                     cout << "\n**DECODING AND EXECUTING...**\n" << endl;
+			
+		    if (sim.getLamp())
+                    cout << "**STOP CODE FOUND: Halting program...**\n\n";
+			
                     //Sets text colour as white
                     cout << setColour(White);
 
