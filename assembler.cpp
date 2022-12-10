@@ -46,7 +46,7 @@ int Assembler::mnemonicToOpcode(string mnemonic)
 }
 
 // Clean input file to assemble
-void Assembler::formatInput()
+void Assembler::formatInput(string inputFile)
 {
     ifstream read(inputFile);
     string line;
@@ -61,7 +61,7 @@ void Assembler::formatInput()
             else if(c == ';'){          //move to next line if comment
                 break;             
             }
-            else if(c != ' ' ){         //if not a space add char to temp
+            else if(c != ' ' && c != ':'){         //if not a space add char to temp
                 s += c;
             }
         }
@@ -99,11 +99,36 @@ void Assembler::writeToFile()
 
 void displayMenu()
 {
-
+    Assembler assembler; 
+    bool finished = false;
+    int choice;
+    string file;
+    while(!finished)
+    {
+        cout << "MENU" << endl;
+        cout << "1) assemble code to binary" << endl;
+        cout << "2) exit" << endl;
+        cin >> choice;
+        switch(choice)
+        {
+            case 1:
+            {
+                cout << "enter source file name" << endl;
+                cin >> file;
+                assembler.formatInput(file);
+                assembler.displayOutput();
+            }
+            case 2:
+            {
+                finished == true;
+            }
+        }
+    }
+}
 }
 
 int main()
 {
-    //displayMenu();
+    displayMenu();
     return 0;
 }
